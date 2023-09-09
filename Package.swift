@@ -10,6 +10,9 @@ let package = Package(
         .library(
             name: "MLDCore",
             targets: ["MLDCore", "Notifications"]),
+        .library(
+            name: "Notifications",
+            targets: ["Notifications"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
