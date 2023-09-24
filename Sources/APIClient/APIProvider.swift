@@ -1,19 +1,23 @@
 import Foundation
 import Domain
 
-public class APIProvider {
+open class APIProvider {
     private let session: URLSession
 
     public init(session: URLSession = .shared) {
         self.session = session
     }
+    
+    open func buildRequest(from endpoint: Endpoint) -> URLRequest {
+        URLRequestBuilder.parametersRequest.build(endpoint)
+    }
 
-    func getResponse<T: Decodable>(from endpoint: Endpoint, cache: Bool = true) async throws -> T {
-        let request = URLRequestBuilder.parametersRequest.build(endpoint)
+    open func getResponse<T: Decodable>(from endpoint: Endpoint, cache: Bool = true) async throws -> T {
+        let request = buildRequest(from: endpoint)
         return try await getResponse(from: request, cache: cache)
     }
 
-    func getData(from request: URLRequest, cache: Bool = true) async throws -> Foundation.Data {
+    open func getData(from request: URLRequest, cache: Bool = true) async throws -> Foundation.Data {
         if cache, let cachedData = getCachedData(from: request) {
             return cachedData
         }
@@ -37,25 +41,28 @@ public class APIProvider {
 // MARK: - Helpers
 extension APIProvider {
     func getResponse<T: Decodable>(from request: URLRequest, cache: Bool = true) async throws -> T {
-        if cache, let cachedResult: T = getCachedResponse(from: request) {
-            return cachedResult
-        }
+//        if cache, let cachedResult: T = getCachedResponse(from: request) {
+//            return cachedResult
+//        }
 
         do {
             let (data, response) = try await session.data(for: request)
-            if let httpResponse = response as? HTTPURLResponse, !(200...299).contains(httpResponse.statusCode) {
+            let httpResponse = response as? HTTPURLResponse
+            if let httpResponse, !(200...299).contains(httpResponse.statusCode) {
                 switch httpResponse.statusCode {
-                case 200...299:
-                    return data
+//                case 200...299:
+//                    return try JSONDecoder().decode(T.self, from: data)
                 case 401:
                     throw APIError.unauthorized
                 default:
                     throw APIError.serverError(code: httpResponse.statusCode)
                 }
             } else {
-                throw APIError.invalidResponse
+                return try JSONDecoder().decode(T.self, from: data)
             }
         } catch {
+            print("💛 err \(error)")
+            
             throw APIError.unknown
         }
     }

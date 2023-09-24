@@ -1,9 +1,29 @@
+
+import Foundation
+
 public struct Endpoint {
-    let baseStringURL: String
-    let path: String
-    let parameters: [String: Any]
-    let method: HTTPMethod
-    let task: HTTPTask
+    public let baseStringURL: String
+    public let path: String
+    public let parameters: [String: Any]
+    public let method: HTTPMethod
+    public let task: HTTPTask
+    public let headers: [String: String]
+    
+    public init(
+        baseStringURL: String,
+        path: String,
+        parameters: [String : Any],
+        method: HTTPMethod,
+        task: HTTPTask,
+        headers: [String : String] = [:]
+    ) {
+        self.baseStringURL = baseStringURL
+        self.path = path
+        self.parameters = parameters
+        self.method = method
+        self.task = task
+        self.headers = headers
+    }
 }
 
 extension Endpoint {
@@ -28,7 +48,7 @@ extension URLRequestBuilder where Z == Endpoint {
 
             var request = URLRequest(url: url)
             request.httpMethod = endpoint.method.rawValue
-
+            request.allHTTPHeaderFields = endpoint.headers
             switch endpoint.task {
             case .queryParams:
                 var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
@@ -37,11 +57,12 @@ extension URLRequestBuilder where Z == Endpoint {
                 }
                 request.url = components?.url
             case .httpBody:
-                let data = JSONSerialization.data(
+                if let data = try? JSONSerialization.data(
                     withJSONObject: endpoint.parameters,
                     options: .prettyPrinted
-                )
-                request.httpBody = data
+                ) {
+                    request.httpBody = data
+                }
             }
 
             return request
