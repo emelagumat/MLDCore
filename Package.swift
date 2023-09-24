@@ -13,6 +13,9 @@ let package = Package(
         .library(
             name: "Notifications",
             targets: ["Notifications"]),
+        .library(
+            name: "APIClient",
+            targets: ["APIClient"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -26,6 +29,9 @@ let package = Package(
             dependencies: []),
         .target(
             name: "Notifications",
+            dependencies: []),
+        .target(
+            name: "APIClient",
             dependencies: []),
         .testTarget(
             name: "MLDCoreTests",
