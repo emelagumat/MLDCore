@@ -1,5 +1,4 @@
 import Foundation
-import Domain
 
 open class APIProvider {
     private let session: URLSession
