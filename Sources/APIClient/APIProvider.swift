@@ -40,17 +40,11 @@ open class APIProvider {
 // MARK: - Helpers
 extension APIProvider {
     func getResponse<T: Decodable>(from request: URLRequest, cache: Bool = true) async throws -> T {
-//        if cache, let cachedResult: T = getCachedResponse(from: request) {
-//            return cachedResult
-//        }
-
         do {
             let (data, response) = try await session.data(for: request)
             let httpResponse = response as? HTTPURLResponse
             if let httpResponse, !(200...299).contains(httpResponse.statusCode) {
                 switch httpResponse.statusCode {
-//                case 200...299:
-//                    return try JSONDecoder().decode(T.self, from: data)
                 case 401:
                     throw APIError.unauthorized
                 default:
@@ -60,8 +54,6 @@ extension APIProvider {
                 return try JSONDecoder().decode(T.self, from: data)
             }
         } catch {
-            print("💛 err \(error)")
-            
             throw APIError.unknown
         }
     }
