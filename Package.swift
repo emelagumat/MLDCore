@@ -50,6 +50,5 @@ let package = Package(
         .testTarget(
             name: "MLDCoreTests",
             dependencies: ["MLDCore"])
-    ],
-    swiftLanguageVersions: [.v6]
+    ]
 )
