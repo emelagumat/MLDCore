@@ -20,9 +20,9 @@ let package = Package(
         .library(
             name: "MVVM",
             targets: ["MVVM"]),
-//        .library(
-//            name: "MLDUserDefaults",
-//            targets: ["MLDUserDefaults"]),
+        .library(
+            name: "MLDUserDefaults",
+            targets: ["MLDUserDefaults"]),
     ],
     dependencies: [
 //        .package(path: "../../MLDFeatures")
@@ -43,10 +43,10 @@ let package = Package(
         .target(
             name: "MVVM",
             dependencies: []),
-//        .target(
-//            name: "MLDUserDefaults",
-//            dependencies: [],
-//            path: "Sources/UserDefaults"),
+        .target(
+            name: "MLDUserDefaults",
+            dependencies: [],
+            path: "Sources/UserDefaults"),
         .testTarget(
             name: "MLDCoreTests",
             dependencies: ["MLDCore"])
