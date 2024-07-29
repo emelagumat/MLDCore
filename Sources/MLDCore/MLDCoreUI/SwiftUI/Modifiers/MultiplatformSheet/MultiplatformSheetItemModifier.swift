@@ -1,8 +1,9 @@
 import SwiftUI
 
 struct MultiplatformSheetItemModifier<Item, Sheet: View>: ViewModifier where Item: Hashable {
-    var macOSWidth: CGFloat = 540
-    var macOSHeight: CGFloat = 540
+    var macOSWidth: CGFloat
+    var macOSHeight: CGFloat
+    var iOSPresentationDetents: Set<PresentationDetent>
     var item: Binding<Item?>
     @ViewBuilder var sheet: (Item) -> Sheet
     
@@ -13,6 +14,7 @@ struct MultiplatformSheetItemModifier<Item, Sheet: View>: ViewModifier where Ite
             .multiplatformSheet(
                 macOSWidth: macOSWidth,
                 macOSHeight: macOSHeight,
+                iOSPresentationDetents: iOSPresentationDetents,
                 isPresented: $isPresented,
                 sheet: {
                     if let item = item.wrappedValue {
@@ -48,10 +50,19 @@ public extension View {
     func multiplatformSheet<Item: Hashable, Sheet: View>(
         macOSWidth: CGFloat = 540,
         macOSHeight: CGFloat = 540,
+        iOSPresentationDetents: Set<PresentationDetent> = [.large],
         item: Binding<Item?>,
         @ViewBuilder sheet: @escaping (Item) -> Sheet
     ) -> some View {
-        self.modifier(MultiplatformSheetItemModifier(macOSWidth: macOSWidth, macOSHeight: macOSHeight, item: item, sheet: sheet))
+        self.modifier(
+            MultiplatformSheetItemModifier(
+                macOSWidth: macOSWidth,
+                macOSHeight: macOSHeight,
+                iOSPresentationDetents: iOSPresentationDetents,
+                item: item,
+                sheet: sheet
+            )
+        )
     }
     
     /**
@@ -65,9 +76,18 @@ public extension View {
      */
     func multiplatformSheet<Item: Hashable, Sheet: View>(
         size: CGFloat = 540,
+        iOSPresentationDetents: Set<PresentationDetent> = [.large],
         item: Binding<Item?>,
         @ViewBuilder sheet: @escaping (Item) -> Sheet
     ) -> some View {
-        self.modifier(MultiplatformSheetItemModifier(macOSWidth: size, macOSHeight: size, item: item, sheet: sheet))
+        self.modifier(
+            MultiplatformSheetItemModifier(
+                macOSWidth: size,
+                macOSHeight: size,
+                iOSPresentationDetents: iOSPresentationDetents,
+                item: item,
+                sheet: sheet
+            )
+        )
     }
 }

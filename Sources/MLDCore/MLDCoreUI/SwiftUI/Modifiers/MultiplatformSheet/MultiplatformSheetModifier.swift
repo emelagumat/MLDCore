@@ -2,34 +2,49 @@
 import SwiftUI
 
 struct MultiplatformSheetModifier<Sheet: View>: ViewModifier {
-    var macOSWidth: CGFloat = 540
-    var macOSHeight: CGFloat = 540
+    var macOSWidth: CGFloat
+    var macOSHeight: CGFloat
+    var iOSPresentationDetents: Set<PresentationDetent>
     var isPresented: Binding<Bool>
     @ViewBuilder var sheet: Sheet
+    
+    private var isIpad: Bool {
+        #if os(iOS)
+        UIDevice.current.userInterfaceIdiom == .pad
+        #elseif os(macOS)
+        false
+        #endif
+    }
+    
+    var presentationDetents: Set<PresentationDetent> {
+        isIpad ? [.large] : iOSPresentationDetents
+    }
     
     func body(content: Content) -> some View {
 #if os(iOS)
         content
             .sheet(isPresented: isPresented, content: {
                 sheet
+                    .presentationDetents(presentationDetents)
             })
 #elseif os(macOS)
         content
             .sheet(isPresented: isPresented, content: {
                 VStack(spacing: .zero) {
                     sheet
+                    Spacer()
                     Button(
                         action: {
                             isPresented.wrappedValue = false
                         }, label: {
                             Text("common_ok")
-                                .padding(4)
+                                .padding(2)
                         }
                     )
                     .buttonStyle(BorderedProminentButtonStyle())
+                    .padding(4)
                 }
                 .frame(width: macOSWidth, height: macOSHeight, alignment: .center)
-                .ignoresSafeArea()
             })
 #endif
     }
@@ -49,10 +64,19 @@ public extension View {
     func multiplatformSheet<Sheet: View>(
         macOSWidth: CGFloat = 540,
         macOSHeight: CGFloat = 540,
+        iOSPresentationDetents: Set<PresentationDetent> = [.large],
         isPresented: Binding<Bool>,
         @ViewBuilder sheet: () -> Sheet
     ) -> some View {
-        self.modifier(MultiplatformSheetModifier(macOSWidth: macOSWidth, macOSHeight: macOSHeight, isPresented: isPresented, sheet: sheet))
+        self.modifier(
+            MultiplatformSheetModifier(
+                macOSWidth: macOSWidth,
+                macOSHeight: macOSHeight,
+                iOSPresentationDetents: iOSPresentationDetents,
+                isPresented: isPresented,
+                sheet: sheet
+            )
+        )
     }
     
     /**
@@ -66,9 +90,33 @@ public extension View {
      */
     func multiplatformSheet<Sheet: View>(
         size: CGFloat = 540,
+        iOSPresentationDetents: Set<PresentationDetent> = [.large],
         isPresented: Binding<Bool>,
         @ViewBuilder sheet: () -> Sheet
     ) -> some View {
-        self.modifier(MultiplatformSheetModifier(macOSWidth: size, macOSHeight: size, isPresented: isPresented, sheet: sheet))
+        self.modifier(
+            MultiplatformSheetModifier(
+                macOSWidth: size,
+                macOSHeight: size,
+                iOSPresentationDetents: iOSPresentationDetents,
+                isPresented: isPresented,
+                sheet: sheet
+            )
+        )
     }
 }
+
+@propertyWrapper struct Observed {
+    typealias Value = any Observable
+    var wrappedValue: Value
+    
+    init(wrappedValue: Value) {
+        self.wrappedValue = wrappedValue
+    }
+}
+
+@Observable
+final class DataSource: Sendable, ObservableObject {
+    var id = "ha"
+}
+
