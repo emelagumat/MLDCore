@@ -3,7 +3,7 @@ import SwiftUI
 struct MultiplatformSheetItemModifier<Item, Sheet: View>: ViewModifier where Item: Hashable {
     var macOSWidth: CGFloat
     var macOSHeight: CGFloat
-    var iOSPresentationDetents: Set<PresentationDetent>
+    var iOSPresentationDetents: Set<PresentationDetent>?
     var item: Binding<Item?>
     @ViewBuilder var sheet: (Item) -> Sheet
     

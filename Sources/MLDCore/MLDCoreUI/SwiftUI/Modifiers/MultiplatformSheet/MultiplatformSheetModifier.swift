@@ -4,7 +4,7 @@ import SwiftUI
 struct MultiplatformSheetModifier<Sheet: View>: ViewModifier {
     var macOSWidth: CGFloat
     var macOSHeight: CGFloat
-    var iOSPresentationDetents: Set<PresentationDetent>
+    var iOSPresentationDetents: Set<PresentationDetent>?
     var isPresented: Binding<Bool>
     @ViewBuilder var sheet: Sheet
     
@@ -16,16 +16,20 @@ struct MultiplatformSheetModifier<Sheet: View>: ViewModifier {
         #endif
     }
     
-    var presentationDetents: Set<PresentationDetent> {
-        isIpad ? [.large] : iOSPresentationDetents
+    var presentationDetents: Set<PresentationDetent>? {
+        isIpad ? nil : iOSPresentationDetents
     }
     
     func body(content: Content) -> some View {
 #if os(iOS)
         content
             .sheet(isPresented: isPresented, content: {
-                sheet
-                    .presentationDetents(presentationDetents)
+                if let presentationDetents {
+                    sheet
+                        .presentationDetents(presentationDetents)
+                } else {
+                    sheet
+                }
             })
 #elseif os(macOS)
         content
@@ -64,7 +68,7 @@ public extension View {
     func multiplatformSheet<Sheet: View>(
         macOSWidth: CGFloat = 540,
         macOSHeight: CGFloat = 540,
-        iOSPresentationDetents: Set<PresentationDetent> = [.large],
+        iOSPresentationDetents: Set<PresentationDetent>? = nil,
         isPresented: Binding<Bool>,
         @ViewBuilder sheet: () -> Sheet
     ) -> some View {
@@ -90,7 +94,7 @@ public extension View {
      */
     func multiplatformSheet<Sheet: View>(
         size: CGFloat = 540,
-        iOSPresentationDetents: Set<PresentationDetent> = [.large],
+        iOSPresentationDetents: Set<PresentationDetent>? = nil,
         isPresented: Binding<Bool>,
         @ViewBuilder sheet: () -> Sheet
     ) -> some View {
