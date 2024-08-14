@@ -4,11 +4,11 @@ import SwiftUI
 public struct Toast: Equatable {
     public var style: ToastStyle
     public var message: String
-    public var duration: Double = 3
+    public var duration: Double
     public var width: Double = .infinity
     public var performHapticFeedbacks: Bool = true
     
-    public init(style: ToastStyle, message: String, duration: Double = 3, width: Double = .infinity, performHapticFeedbacks: Bool = true) {
+    public init(style: ToastStyle, message: String, duration: Double = ToastStyle.defaultDuration, width: Double = .infinity, performHapticFeedbacks: Bool = true) {
         self.style = style
         self.message = message
         self.duration = duration
@@ -55,4 +55,6 @@ public extension ToastStyle {
     static var warningIcon = "exclamationmark.triangle.fill"
     static var successIcon = "checkmark.circle.fill"
     static var errorIcon = "xmark.circle.fill"
+    
+    static var defaultDuration: Double = 5
 }

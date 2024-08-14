@@ -54,12 +54,12 @@ struct ToastView: View {
     return Preview()
 }
 
-struct ToastModifier: ViewModifier {
+public struct ToastModifier: ViewModifier {
     
     @Binding var toast: Toast?
     @State private var workItem: DispatchWorkItem?
     
-    func body(content: Content) -> some View {
+    public func body(content: Content) -> some View {
         content
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .overlay(
@@ -131,7 +131,7 @@ struct ToastModifier: ViewModifier {
     }
 }
 
-extension View {
+public extension View {
     
     func toastView(toast: Binding<Toast?>) -> some View {
         self.modifier(ToastModifier(toast: toast))
