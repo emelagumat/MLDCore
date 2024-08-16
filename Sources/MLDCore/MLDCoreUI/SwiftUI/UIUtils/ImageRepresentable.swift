@@ -1,29 +1,29 @@
 
 import SwiftUI
 
-public protocol ImageRepresentable {
+public protocol ImageRepresentableContract {
     var source: ImageRepresentableSource { get }
     var contentMode: ContentMode { get }
 }
 
 // MARK: - Builders
 public extension ImageRepresentable {
-    static func systemName(_ name: String, contentMode: ContentMode = .fit) -> any ImageRepresentable {
-        InternalImageRepresentable(source: .systemName(name), contentMode: contentMode)
+    static func systemName(_ name: String, contentMode: ContentMode = .fit) -> Self{
+        ImageRepresentable(source: .systemName(name), contentMode: contentMode)
     }
-    static func localName(_ name: String, contentMode: ContentMode = .fit) -> any ImageRepresentable {
-        InternalImageRepresentable(source: .localName(name), contentMode: contentMode)
+    static func localName(_ name: String, contentMode: ContentMode = .fit) -> Self{
+        ImageRepresentable(source: .localName(name), contentMode: contentMode)
     }
-    static func uiImage(_ uiImage: UIImage, contentMode: ContentMode = .fit) -> any ImageRepresentable {
-        InternalImageRepresentable(source: .uiImage(uiImage), contentMode: contentMode)
+    static func uiImage(_ uiImage: UIImage, contentMode: ContentMode = .fit) -> Self{
+        ImageRepresentable(source: .uiImage(uiImage), contentMode: contentMode)
     }
-    static func image(_ image: Image, contentMode: ContentMode = .fit) -> any ImageRepresentable {
-        InternalImageRepresentable(source: .image(image), contentMode: contentMode)
+    static func image(_ image: Image, contentMode: ContentMode = .fit) -> Self{
+        ImageRepresentable(source: .image(image), contentMode: contentMode)
     }
 }
 
 // MARK: - Getters
-public extension ImageRepresentable {
+public extension ImageRepresentableContract {
     @MainActor var image: Image? {
         switch source {
         case .systemName(let name):
@@ -53,13 +53,18 @@ public extension ImageRepresentable {
 }
 
 // MARK: - Defaults
-public extension ImageRepresentable {
+public extension ImageRepresentableContract {
     var contentMode: ContentMode { .fit }
 }
 
-struct InternalImageRepresentable: ImageRepresentable {
-    let source: ImageRepresentableSource
-    let contentMode: ContentMode
+public struct ImageRepresentable: ImageRepresentableContract, Sendable {
+    public let source: ImageRepresentableSource
+    public let contentMode: ContentMode
+    
+    public init(source: ImageRepresentableSource, contentMode: ContentMode) {
+        self.source = source
+        self.contentMode = contentMode
+    }
 }
 
 public enum ImageRepresentableSource {
